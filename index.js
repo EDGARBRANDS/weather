@@ -14,16 +14,16 @@ app.get("/", function(req, res) {
 //invoked after hitting go in the html form
 app.post("/", function(req, res) {
     
-    // takes in the zip from the html form, display in // console. Takes in as string, ex. for zip 02139
-        var zip = String(req.body.zipInput);
-        console.log(req.body.zipInput);
+    // takes in the city name from the html form, display in console.
+    var city = String(req.body.CityInput);
+    console.log(req.body.CityInput);
     
-    //build up the URL for the JSON query, API Key is // secret and needs to be obtained by signup 
-        const units = "imperial";
-        const apiKey = "67f6b382921c1e89b39b20d4f9556f22";
-        const url = "https://api.openweathermap.org/data/2.5/weather?zip=" + zip +  "&units=" + units + "&APPID=" + apiKey;
+    //build up the URL for the JSON query, API Key is secret and needs to be obtained by signup 
+    const units = "imperial";
+    const apiKey = "24768611744b68dad8a27df536b1039f";
+    const url = "https://api.openweathermap.org/data/2.5/weather?q=" + city +  "&units=" + units + "&APPID=" + apiKey;
     
-    // this gets the data from Open WeatherPI
+    // this gets the data from Open Weather API
     https.get(url, function(response){
         console.log(response.statusCode);
         
@@ -31,14 +31,25 @@ app.post("/", function(req, res) {
         response.on("data", function(data){
             const weatherData = JSON.parse(data);
             const temp = weatherData.main.temp;
-            const city = weatherData.name;
+            const Weathercity = weatherData.name;
             const weatherDescription = weatherData.weather[0].description;
             const icon = weatherData.weather[0].icon;
             const imageURL = "http://openweathermap.org/img/wn/" + icon + "@2x.png";
+            const humidity = weatherData.main.humidity;
+            const windSpeed = weatherData.wind.speed;
+            const minTemp = weatherData.main.temp_min;
+            const maxTemp = weatherData.main.temp_max;
+            const pressure = weatherData.main.pressure;
+          
             
             // displays the output of the results
             res.write("<h1> The weather is " + weatherDescription + "<h1>");
-            res.write("<h2>The Temperature in " + city + " " + zip + " is " + temp + " Degrees Fahrenheit<h2>");
+            res.write("<h2>The Temperature in " + Weathercity  + " is " + temp + " Degrees Fahrenheit<h2>");
+            res.write("<p>Humidity: " + humidity + "%</p>");
+            res.write("<p>Wind Speed: " + windSpeed + " mph</p>");
+            res.write("<p>Min Temperature: " + minTemp + " Degrees Fahrenheit</p>");
+            res.write("<p>Max Temperature: " + maxTemp + " Degrees Fahrenheit</p>");
+            res.write("<p>Pressure: " + pressure + " hPa</p>");
             res.write("<img src=" + imageURL +">");
             res.send();
         });
